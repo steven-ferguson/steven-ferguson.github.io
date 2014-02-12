@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://steven-ferguson.github.io/sitemap.xml 

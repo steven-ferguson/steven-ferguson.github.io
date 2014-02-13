@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
-  <link href="http://steven-ferguson.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Octopress | My Octopress Blog]]></title>
+  <link href="http://steven-ferguson.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
   <updated>2014-02-12T16:01:57-08:00</updated>
   <id>http://steven-ferguson.github.io/</id>

@@ -1,12 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>http://steven-ferguson.github.io/blog/2014/02/12/first/</loc>
+        <lastmod>2014-02-12T15:59:17-08:00</lastmod>
+    </url>
+    <url>
         <loc>http://steven-ferguson.github.io/blog/archives/</loc>
-        <lastmod>2014-02-12T14:26:22-08:00</lastmod>
+        <lastmod>2014-02-12T15:59:17-08:00</lastmod>
     </url>
     <url>
         <loc>http://steven-ferguson.github.io/</loc>
-        <lastmod>2014-02-12T14:26:22-08:00</lastmod>
+        <lastmod>2014-02-12T15:59:17-08:00</lastmod>
     </url>
     <url>
         <loc>http://steven-ferguson.github.io/robots.txt</loc>

@@ -1,0 +1,13 @@
+---
+layout: post
+title: "First!"
+date: 2014-02-12 15:38:22 -0800
+comments: true
+categories: [Github, Octopress]
+---
+
+They say starting is the hardest part. My initial idea for this blog is to post the things I learned during the day and the resources that helped me learn them.
+
+####Here's what I learned today:
+
+1) You can host a blog on Github using [Github Pages](http://pages.github.com/). There is a framework called [Octopress](http://octopress.org) to help make things easy. I followed the documentation for [initial setup](http://octopress.org/docs/setup/) and launched this blog. 

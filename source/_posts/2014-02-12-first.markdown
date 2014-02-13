@@ -8,6 +8,34 @@ categories: [Github, Octopress]
 
 They say starting is the hardest part. My initial idea for this blog is to post the things I learned during the day and the resources that helped me learn them.
 
-####Here's what I learned today:
+###Here is what I learned today:
 
-1) You can host a blog on Github using [Github Pages](http://pages.github.com/). There is a framework called [Octopress](http://octopress.org) to help make things easy. I followed the documentation for [initial setup](http://octopress.org/docs/setup/) and launched this blog. 
+1. You can host a blog on Github using [Github Pages](http://pages.github.com/). There is a framework called [Octopress](http://octopress.org) to help make things easy. I followed the documentation for [initial setup](http://octopress.org/docs/setup/) and launched this blog. 
+
+2. Deploying the changes for the blog can be done with the following steps:
+
+	Generate the blog with
+
+	```
+	rake generate
+	```
+
+	Deploy
+
+	```
+	rake deploy
+	```
+
+	Commit the source for the blog.
+
+	```
+	git add .
+	git commit -m 'your message'
+	git push origin source
+	``` 
+
+3. You can preview changes to the blog before deploying using the following
+
+	```
+	rake preview
+	```

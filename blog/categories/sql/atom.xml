@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Things I Learned Today]]></title>
-  <link href="http://steven-ferguson.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: SQL | Things I Learned Today]]></title>
+  <link href="http://steven-ferguson.github.io/blog/categories/sql/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
   <updated>2014-02-13T16:26:58-08:00</updated>
   <id>http://steven-ferguson.github.io/</id>
@@ -27,48 +27,6 @@
 <li><p>If you are using PostgreSQL (and apparently most other SQL databases), the primary key is index automatically. This means that in Rails the &ldquo;id&rdquo; column is indexed automatically because Rails tells the database the &ldquo;id&rdquo; column is the primary key.</p></li>
 <li><p>Basically any column you have to query for a set of records should be indexed.</p></li>
 <li><p>There are two downsides to adding an index. First, anytime you INSERT or UPDATE, the database must write both the record and the index reference which means more work for the database. Second, if you are creating an index for an existing set of records it could take a while. The Thoughtbot blog talks about a database migration that took 7 hours!</p></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[First!]]></title>
-    <link href="http://steven-ferguson.github.io/blog/2014/02/12/first/"/>
-    <updated>2014-02-12T15:38:22-08:00</updated>
-    <id>http://steven-ferguson.github.io/blog/2014/02/12/first</id>
-    <content type="html"><![CDATA[<p>They say starting is the hardest part. My initial idea for this blog is to post the things I learned during the day and the resources that helped me learn them.</p>
-
-<h3>Here is what I learned today:</h3>
-
-<ol>
-<li><p>You can host a blog on Github using <a href="http://pages.github.com/">Github Pages</a>. There is a framework called <a href="http://octopress.org">Octopress</a> to help make things easy. I followed the documentation for <a href="http://octopress.org/docs/setup/">initial setup</a> and launched this blog.</p></li>
-<li><p>Deploying the changes for the blog can be done with the following steps:</p>
-
-<p> Generate the blog with</p>
-
-<p> <code>
- rake generate
-</code></p>
-
-<p> Deploy</p>
-
-<p> <code>
- rake deploy
-</code></p>
-
-<p> Commit the source for the blog.</p>
-
-<p> <code>
- git add .
- git commit -m 'your message'
- git push origin source
-</code></p></li>
-<li><p>You can preview changes to the blog before deploying using the following</p>
-
-<p> <code>
- rake preview
-</code></p></li>
 </ol>
 
 ]]></content>

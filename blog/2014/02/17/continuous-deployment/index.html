@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Database Indexes - Things I Learned Today</title>
+  <title>Continuous Deployment - Things I Learned Today</title>
   <meta name="author" content="Steven">
 
    
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://steven-ferguson.github.io/blog/2014/02/13/database-indexes">
+  <link rel="canonical" href="http://steven-ferguson.github.io/blog/2014/02/17/continuous-deployment">
   <link href="/favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
@@ -75,7 +75,7 @@
 
   <header>
   <div class="jumbotron">
-    Database Indexes
+    Continuous Deployment
 	<h5>
 
 
@@ -88,20 +88,46 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2014-02-13T15:43:48-08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2014</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2014-02-17T12:08:47-08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2014</time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>Prior to today, I knew database indexes were something you used to help speed up a query, but I didn&rsquo;t really understand their importance. I read this great <a href="http://robots.thoughtbot.com/a-grand-piano-for-your-violin">Thoughtbot blog</a> to learn more about them.</p>
+      <p>I have been hearing a lot recently about <a href="http://my.safaribooksonline.com/book/web-development/web-services/9781449377465/continuous-deployment/continuous_deployment#X2ludGVybmFsX0h0bWxWaWV3P3htbGlkPTk3ODE0NDkzNzc0NjUlMkZ0aGVfcXVhbGl0eV9kZWZlbmRlcnNfYXBvc3Ryb3BoeV9sYW1lbnQmcXVlcnk9">continuous deployment</a> especially in the context of building a lean startup, so I decided to try and get one of my projects running with continuous deployment.</p>
 
-<h4>Here is what I learned today:</h4>
+<h4>Here&rsquo;s what I learned today:</h4>
 
 <ol>
-<li><p>When you perform a database query on a column without an index the database will look at each row and compare its value with the query value. If you don&rsquo;t have many records this isn&rsquo;t a big deal, but when you are talking about thousands or millions of rows that is a lot of work! Indexes provide a quick reference for the database, so it can retreive the matching records without having to look at every row.</p></li>
-<li><p>If you are using PostgreSQL (and apparently most other SQL databases), the primary key is index automatically. This means that in Rails the &ldquo;id&rdquo; column is indexed automatically because Rails tells the database the &ldquo;id&rdquo; column is the primary key.</p></li>
-<li><p>Basically any column you have to query for a set of records should be indexed.</p></li>
-<li><p>There are two downsides to adding an index. First, anytime you INSERT or UPDATE, the database must write both the record and the index reference which means more work for the database. Second, if you are creating an index for an existing set of records it could take a while. The Thoughtbot blog talks about a database migration that took 7 hours!</p></li>
+<li><p><a href="https://travis-ci.org/">Travis CI</a> is an open source tool for continuous integration and deployment.</p></li>
+<li><p>There are several steps to setting up your project with Travis CI:</p>
+
+<ul>
+<li><p>The <a href="http://docs.travis-ci.com/user/getting-started/">getting started guide</a> does a good job explaining the basics.</p></li>
+<li><p>For my project, I needed to make a few customizations the biggest one was creating a test database that my test could use. Here is my <code>.travis.yml</code>:</p>
+
+<pre><code>         language: ruby
+         rvm:
+         - 2.0.0
+         env:
+         - DB=postresql
+         script:
+         - bundle exec rake db:test:prepare --trace
+         - bundle exec rspec
+         before_script:
+         - psql -c 'create database my_app_test;' -U postgres 
+</code></pre></li>
+</ul>
+</li>
+<li><p>Travis CI <a href="http://docs.travis-ci.com/user/deployment/heroku/">integrates nicely with Heroku</a>, so that your code be deployed after a successful build. I was having some problems deploying using Anvil, so I switched to using git. Here is what I added to my <code>.travis.yml</code> for deploying to Heroku:</p>
+
+<pre><code> deploy:
+   provider: heroku
+   api_key:
+     secure: encrypted-key
+   strategy: git
+   app: epicodus-qa
+   run: "rake db:migrate"
+</code></pre></li>
 </ol>
 
 
@@ -122,11 +148,11 @@
 
 
 
-  <a href="/blog/categories/postgresql/"><span class="badge">PostgreSQL</span></a>
+  <a href="/blog/categories/agile/"><span class="badge">Agile</span></a>
 
-  <a href="/blog/categories/rails/"><span class="badge">Rails</span></a>
+  <a href="/blog/categories/heroku/"><span class="badge">Heroku</span></a>
 
-  <a href="/blog/categories/sql/"><span class="badge">SQL</span></a>
+  <a href="/blog/categories/travis-ci/"><span class="badge">Travis CI</span></a>
 
 
 
@@ -156,10 +182,8 @@
       <div class="span12">
         <p class="meta">
           
-            <a class="basic-alignment left" href="/blog/2014/02/12/first/" title="Previous Post: First!">&laquo; First!</a>
+            <a class="basic-alignment left" href="/blog/2014/02/13/database-indexes/" title="Previous Post: Database Indexes">&laquo; Database Indexes</a>
           
-          
-            <a class="basic-alignment right" href="/blog/2014/02/17/continuous-deployment/" title="Next Post: Continuous Deployment">Continuous Deployment &raquo;</a>
           
         </p>
       </div>

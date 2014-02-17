@@ -104,6 +104,92 @@
   
 
 
+<i class="icon-calendar-empty"></i> <time datetime="2014-02-17T12:08:47-08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2014</time></h5>
+          <div class="row-fluid">
+          
+          </div>
+          
+          <div class="row-fluid">
+          
+          <a href="/blog/categories/agile/"><span class="badge">Agile</span></a>
+          
+          <a href="/blog/categories/heroku/"><span class="badge">Heroku</span></a>
+          
+          <a href="/blog/categories/travis-ci/"><span class="badge">Travis CI</span></a>
+          
+          </div>
+          
+    </div>
+    <div class="span10 post-container">
+      <h1 class="link"><a href="/blog/2014/02/17/continuous-deployment/">Continuous Deployment</a></h1>
+      <p>I have been hearing a lot recently about <a href="http://my.safaribooksonline.com/book/web-development/web-services/9781449377465/continuous-deployment/continuous_deployment#X2ludGVybmFsX0h0bWxWaWV3P3htbGlkPTk3ODE0NDkzNzc0NjUlMkZ0aGVfcXVhbGl0eV9kZWZlbmRlcnNfYXBvc3Ryb3BoeV9sYW1lbnQmcXVlcnk9">continuous deployment</a> especially in the context of building a lean startup, so I decided to try and get one of my projects running with continuous deployment.</p>
+
+<h4>Here&rsquo;s what I learned today:</h4>
+
+<ol>
+<li><p><a href="https://travis-ci.org/">Travis CI</a> is an open source tool for continuous integration and deployment.</p></li>
+<li><p>There are several steps to setting up your project with Travis CI:</p>
+
+<ul>
+<li><p>The <a href="http://docs.travis-ci.com/user/getting-started/">getting started guide</a> does a good job explaining the basics.</p></li>
+<li><p>For my project, I needed to make a few customizations the biggest one was creating a test database that my test could use. Here is my <code>.travis.yml</code>:</p>
+
+<pre><code>         language: ruby
+         rvm:
+         - 2.0.0
+         env:
+         - DB=postresql
+         script:
+         - bundle exec rake db:test:prepare --trace
+         - bundle exec rspec
+         before_script:
+         - psql -c 'create database my_app_test;' -U postgres 
+</code></pre></li>
+</ul>
+</li>
+<li><p>Travis CI <a href="http://docs.travis-ci.com/user/deployment/heroku/">integrates nicely with Heroku</a>, so that your code be deployed after a successful build. I was having some problems deploying using Anvil, so I switched to using git. Here is what I added to my <code>.travis.yml</code> for deploying to Heroku:</p>
+
+<pre><code> deploy:
+   provider: heroku
+   api_key:
+     secure: encrypted-key
+   strategy: git
+   app: epicodus-qa
+   run: "rake db:migrate"
+</code></pre></li>
+</ol>
+
+
+      
+      
+    </div>
+  </div>
+
+
+
+    </article>
+    
+    <hr>
+    
+  
+  
+    <article>
+      
+
+  <div class="row-fluid">
+    <div class="span2 post-meta">
+	  <h5 class="date-time">
+
+
+
+
+
+
+
+
+  
+
+
 <i class="icon-calendar-empty"></i> <time datetime="2014-02-13T15:43:48-08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2014</time></h5>
           <div class="row-fluid">
           

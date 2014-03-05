@@ -1,0 +1,30 @@
+---
+layout: post
+title: "Rake"
+date: 2014-03-04 20:23:26 -0800
+comments: true
+categories: [Rake, Rspec]
+---
+
+[Rake](http://rake.rubyforge.org/) is something I have been using since day one with Rails, but that I really haven't gone any deeper with than the basic rails rake tasks. Today I had to write a rake tasks that ran some checks and updated records.
+
+Here's what I learned:
+
+1. This [article](http://jasonseifer.com/2010/04/06/rake-tutorial) by Jason Seifer was a great introduction to rake. The big idea is that rake has namespaces and inside those namespaces you define tasks. 
+
+        namespace :feed do
+          desc "Feed dog" 
+          task :dog => :environment do
+            puts "fed the dog"
+          end
+
+          desc "Feed cat"
+          task :cat => :environment do 
+            puts "fed the cat"
+          end
+
+          desc "Feed dog and cat"
+          task :all => [:dog, :cat]
+        end
+
+2. Rake tasks should be tested. [Thoughbot](http://robots.thoughtbot.com/test-rake-tasks-like-a-boss) provides a really nice shared context that makes testing very easy. 

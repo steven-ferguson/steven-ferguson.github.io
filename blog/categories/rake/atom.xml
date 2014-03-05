@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Rake | Things I Learned Today]]></title>
+  <link href="http://steven-ferguson.github.io/blog/categories/rake/atom.xml" rel="self"/>
+  <link href="http://steven-ferguson.github.io/"/>
+  <updated>2014-03-04T20:50:58-08:00</updated>
+  <id>http://steven-ferguson.github.io/</id>
+  <author>
+    <name><![CDATA[Steven]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rake]]></title>
+    <link href="http://steven-ferguson.github.io/blog/2014/03/04/rake/"/>
+    <updated>2014-03-04T20:23:26-08:00</updated>
+    <id>http://steven-ferguson.github.io/blog/2014/03/04/rake</id>
+    <content type="html"><![CDATA[<p><a href="http://rake.rubyforge.org/">Rake</a> is something I have been using since day one with Rails, but that I really haven&rsquo;t gone any deeper with than the basic rails rake tasks. Today I had to write a rake tasks that ran some checks and updated records.</p>
+
+<p>Here&rsquo;s what I learned:</p>
+
+<ol>
+<li><p>This <a href="http://jasonseifer.com/2010/04/06/rake-tutorial">article</a> by Jason Seifer was a great introduction to rake. The big idea is that rake has namespaces and inside those namespaces you define tasks.</p>
+
+<pre><code> namespace :feed do
+   desc "Feed dog" 
+   task :dog =&gt; :environment do
+     puts "fed the dog"
+   end
+
+   desc "Feed cat"
+   task :cat =&gt; :environment do 
+     puts "fed the cat"
+   end
+
+   desc "Feed dog and cat"
+   task :all =&gt; [:dog, :cat]
+ end
+</code></pre></li>
+<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughbot</a> provides a really nice shared context that makes testing very easy.</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

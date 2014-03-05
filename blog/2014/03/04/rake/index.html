@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Continuous Deployment - Things I Learned Today</title>
+  <title>Rake - Things I Learned Today</title>
   <meta name="author" content="Steven">
 
    
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://steven-ferguson.github.io/blog/2014/02/17/continuous-deployment">
+  <link rel="canonical" href="http://steven-ferguson.github.io/blog/2014/03/04/rake">
   <link href="/favicon.png" rel="icon">
   <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
@@ -75,7 +75,7 @@
 
   <header>
   <div class="jumbotron">
-    Continuous Deployment
+    Rake
 	<h5>
 
 
@@ -88,46 +88,34 @@
   
 
 
-<i class="icon-calendar-empty"></i> <time datetime="2014-02-17T12:08:47-08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2014</time></h5>
+<i class="icon-calendar-empty"></i> <time datetime="2014-03-04T20:23:26-08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2014</time></h5>
   </div>
 </header>
   <div class="row-fluid">
     <div class="span12">
-      <p>I have been hearing a lot recently about <a href="http://my.safaribooksonline.com/book/web-development/web-services/9781449377465/continuous-deployment/continuous_deployment#X2ludGVybmFsX0h0bWxWaWV3P3htbGlkPTk3ODE0NDkzNzc0NjUlMkZ0aGVfcXVhbGl0eV9kZWZlbmRlcnNfYXBvc3Ryb3BoeV9sYW1lbnQmcXVlcnk9">continuous deployment</a> especially in the context of building a lean startup, so I decided to try and get one of my projects running with continuous deployment.</p>
+      <p><a href="http://rake.rubyforge.org/">Rake</a> is something I have been using since day one with Rails, but that I really haven&rsquo;t gone any deeper with than the basic rails rake tasks. Today I had to write a rake tasks that ran some checks and updated records.</p>
 
-<h4>Here&rsquo;s what I learned today:</h4>
+<p>Here&rsquo;s what I learned:</p>
 
 <ol>
-<li><p><a href="https://travis-ci.org/">Travis CI</a> is an open source tool for continuous integration and deployment.</p></li>
-<li><p>There are several steps to setting up your project with Travis CI:</p>
+<li><p>This <a href="http://jasonseifer.com/2010/04/06/rake-tutorial">article</a> by Jason Seifer was a great introduction to rake. The big idea is that rake has namespaces and inside those namespaces you define tasks.</p>
 
-<ul>
-<li><p>The <a href="http://docs.travis-ci.com/user/getting-started/">getting started guide</a> does a good job explaining the basics.</p></li>
-<li><p>For my project, I needed to make a few customizations the biggest one was creating a test database that my test could use. Here is my <code>.travis.yml</code>:</p>
+<pre><code> namespace :feed do
+   desc "Feed dog" 
+   task :dog =&gt; :environment do
+     puts "fed the dog"
+   end
 
-<pre><code>         language: ruby
-         rvm:
-         - 2.0.0
-         env:
-         - DB=postresql
-         script:
-         - bundle exec rake db:test:prepare --trace
-         - bundle exec rspec
-         before_script:
-         - psql -c 'create database my_app_test;' -U postgres 
+   desc "Feed cat"
+   task :cat =&gt; :environment do 
+     puts "fed the cat"
+   end
+
+   desc "Feed dog and cat"
+   task :all =&gt; [:dog, :cat]
+ end
 </code></pre></li>
-</ul>
-</li>
-<li><p>Travis CI <a href="http://docs.travis-ci.com/user/deployment/heroku/">integrates nicely with Heroku</a>, so that your code be deployed after a successful build. I was having some problems deploying using Anvil, so I switched to using git. Here is what I added to my <code>.travis.yml</code> for deploying to Heroku:</p>
-
-<pre><code> deploy:
-   provider: heroku
-   api_key:
-     secure: encrypted-key
-   strategy: git
-   app: epicodus-qa
-   run: "rake db:migrate"
-</code></pre></li>
+<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughbot</a> provides a really nice shared context that makes testing very easy.</p></li>
 </ol>
 
 
@@ -148,11 +136,9 @@
 
 
 
-  <a href="/blog/categories/agile/"><span class="badge">Agile</span></a>
+  <a href="/blog/categories/rake/"><span class="badge">Rake</span></a>
 
-  <a href="/blog/categories/heroku/"><span class="badge">Heroku</span></a>
-
-  <a href="/blog/categories/travis-ci/"><span class="badge">Travis CI</span></a>
+  <a href="/blog/categories/rspec/"><span class="badge">Rspec</span></a>
 
 
 
@@ -182,10 +168,8 @@
       <div class="span12">
         <p class="meta">
           
-            <a class="basic-alignment left" href="/blog/2014/02/13/database-indexes/" title="Previous Post: Database Indexes">&laquo; Database Indexes</a>
+            <a class="basic-alignment left" href="/blog/2014/02/17/continuous-deployment/" title="Previous Post: Continuous Deployment">&laquo; Continuous Deployment</a>
           
-          
-            <a class="basic-alignment right" href="/blog/2014/03/04/rake/" title="Next Post: Rake">Rake &raquo;</a>
           
         </p>
       </div>
@@ -223,8 +207,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://steven-ferguson.github.io/blog/2014/02/17/continuous-deployment/';
-        var disqus_url = 'http://steven-ferguson.github.io/blog/2014/02/17/continuous-deployment/';
+        var disqus_identifier = 'http://steven-ferguson.github.io/blog/2014/03/04/rake/';
+        var disqus_url = 'http://steven-ferguson.github.io/blog/2014/03/04/rake/';
         var disqus_script = 'embed.js';
       
     (function () {

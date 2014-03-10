@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rake | Things I Learned Today]]></title>
   <link href="http://steven-ferguson.github.io/blog/categories/rake/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
-  <updated>2014-03-04T20:50:58-08:00</updated>
+  <updated>2014-03-09T18:59:18-07:00</updated>
   <id>http://steven-ferguson.github.io/</id>
   <author>
     <name><![CDATA[Steven]]></name>
@@ -40,7 +40,7 @@
    task :all =&gt; [:dog, :cat]
  end
 </code></pre></li>
-<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughbot</a> provides a really nice shared context that makes testing very easy.</p></li>
+<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughtbot</a> provides a really nice shared context that makes testing very easy.</p></li>
 </ol>
 
 ]]></content>

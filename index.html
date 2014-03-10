@@ -104,6 +104,294 @@
   
 
 
+<i class="icon-calendar-empty"></i> <time datetime="2014-03-09T13:10:30-07:00" pubdate data-updated="true">Mar 9<span>th</span>, 2014</time></h5>
+          <div class="row-fluid">
+          
+          <a href="http://steven-ferguson.github.io/blog/2014/03/09/mocks-and-stubs-with-bogus/#disqus_thread">Comments </a> <span class="fui-bubble-16"></span>
+          
+          </div>
+          
+          <div class="row-fluid">
+          
+          <a href="/blog/categories/bogus/"><span class="badge">Bogus</span></a>
+          
+          <a href="/blog/categories/rspec/"><span class="badge">RSpec</span></a>
+          
+          <a href="/blog/categories/tdd/"><span class="badge">TDD</span></a>
+          
+          <a href="/blog/categories/testing/"><span class="badge">Testing</span></a>
+          
+          </div>
+          
+    </div>
+    <div class="span10 post-container">
+      <h1 class="link"><a href="/blog/2014/03/09/mocks-and-stubs-with-bogus/">Testing Outgoing Command Messages With RSpec</a></h1>
+      <p>As the size and complexity of the applications I have been working on has grown, the importance of writing good unit test has become increasingly apparent. The goal is to have a test suite that is fast and able to withstand changes.</p>
+
+<p>One of the best approaches I have found to writing good unit tests is discussed by Sandi Metz in <a href="http://www.amazon.com/Practical-Object-Oriented-Design-Ruby-Addison-Wesley/dp/0321721330">Practical Object Oriented Design in Ruby</a> and also in a <a href="https://speakerdeck.com/skmetz/magic-tricks-of-testing-railsconf">talk she gave at RailsConf in 2013</a>.</p>
+
+<p>She has a rule about testing outgoing command messages that says, <em>&ldquo;expect to send outgoing command messages&rdquo;</em>. This means that we should assert that the method actually issues the command message, but we don&rsquo;t assert the result of that message.</p>
+
+<p>For example, suppose I have a party, and I want users to be able to RSVP:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">rsvp</span><span class="p">(</span><span class="n">party</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">party</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I want to assert that when <code>user.rsvp(party)</code> is called, the <code>add_guest</code> message is sent to the party object. Mocks are the perfect tool for testing these command messages because they allow us to test that the correct message is being passed without worrying about how the other object actually deals with that message:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">User</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s1">&#39;#rsvp&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;tells the party to add the user as a guest&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="n">party</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s1">&#39;party&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">party</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">receive</span><span class="p">(</span><span class="ss">:add_guest</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">user</span><span class="o">.</span><span class="n">rsvp</span><span class="p">(</span><span class="n">party</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This allows us to test the <code>rsvp</code> method without having to actually deal with the Party class&#8217; implementation of <code>add_guest</code>. But what happens if we change the public interface for <code>add_guest</code>to allow a guest specify how many to friends they plan to bring to the party?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Party</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">number_of_companions</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">rsvp</span><span class="p">(</span><span class="n">party</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">party</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Our <code>rsvp</code> method is now broken because the <code>add_guest</code> method requires two arguments, but we are only passing it one. Unfortunately our test for <code>rsvp</code> still passes because our test double does not reflect the actual interface that it is mocking.</p>
+
+<p>To solve this problem I recently started using a mocking framework called <a href="https://github.com/psyho/bogus">Bogus</a>. It ensures that your test doubles have the same interface  as the real class.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;bogus/rspec&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s1">&#39;#rsvp&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;tells the party to add the user as a guest&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="n">party</span> <span class="o">=</span> <span class="n">fake</span><span class="p">(</span><span class="ss">:party</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">user</span><span class="o">.</span><span class="n">rsvp</span><span class="p">(</span><span class="n">party</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">party</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_received</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now when we run the test we receive the following failure:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">Failures</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mi">1</span><span class="p">)</span> <span class="no">User</span><span class="c1">#rsvp tells the party to add the user as a guest</span>
+</span><span class='line'>     <span class="no">Failure</span><span class="o">/</span><span class="ss">Error</span><span class="p">:</span> <span class="n">party</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+</span><span class='line'>     <span class="ss">ArgumentError</span><span class="p">:</span>
+</span><span class='line'>       <span class="n">wrong</span> <span class="n">number</span> <span class="n">of</span> <span class="n">arguments</span> <span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Great! Our test double now implements the same interface as the actual Party class and alerts us that our <code>rsvp</code> method is not passing the correct number of arguments. Let&rsquo;s update <code>rsvp</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">rsvp</span><span class="p">(</span><span class="n">party</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">party</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And run our test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">Failures</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="mi">1</span><span class="p">)</span> <span class="no">User</span><span class="c1">#rsvp tells the party to add the user as a guest</span>
+</span><span class='line'>     <span class="no">Failure</span><span class="o">/</span><span class="ss">Error</span><span class="p">:</span> <span class="n">expect</span><span class="p">(</span><span class="n">party</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_received</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+</span><span class='line'>     <span class="ss">ArgumentError</span><span class="p">:</span>
+</span><span class='line'>       <span class="n">tried</span> <span class="n">to</span> <span class="n">stub</span> <span class="n">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">number_of_companions</span><span class="p">)</span> <span class="n">with</span> <span class="ss">arguments</span><span class="p">:</span> <span class="c1">#&lt;User:0x007fa49210caa0&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Whoops! Looks like our stub for add_guest doesn&rsquo;t implement the correct interface for <code>add_guest</code>. Let&rsquo;s update it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s1">&#39;#rsvp&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;tells the party to add the user as a guest&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">party</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_received</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Finished</span> <span class="k">in</span> <span class="mi">0</span><span class="o">.</span><span class="mo">006</span> <span class="n">seconds</span>
+</span><span class='line'><span class="mi">1</span> <span class="n">example</span><span class="p">,</span> <span class="mi">0</span> <span class="n">failures</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Another great feature of Bogus is that it supports mocking a duck type. For example, suppose that in addition to parties, we want users to be able to rsvp to dinners. We can implement this with a duck type by creating an <code>add_guest</code> method for our new Dinner class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Dinner</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">number_of_companions</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">rsvp</span><span class="p">(</span><span class="n">guestable</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">guestable</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now in our test we can mock our duck type interface:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">User</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s1">&#39;#rsvp&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;tells the guestable to add the user as a guest&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="n">guestable</span> <span class="o">=</span> <span class="n">fake</span><span class="p">(</span><span class="ss">:guestable</span><span class="p">)</span> <span class="p">{</span> <span class="o">[</span><span class="no">Party</span><span class="p">,</span> <span class="no">Dinner</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">user</span><span class="o">.</span><span class="n">rsvp</span><span class="p">(</span><span class="n">guestable</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">guestable</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_received</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Mocks are a great way to focus on the messages that your objects are sending when testing. Give them a try and experience the benefits of a faster more resilient test sutie.</p>
+
+      
+      
+    </div>
+  </div>
+
+
+
+    </article>
+    
+    <hr>
+    
+  
+  
+    <article>
+      
+
+  <div class="row-fluid">
+    <div class="span2 post-meta">
+	  <h5 class="date-time">
+
+
+
+
+
+
+
+
+  
+
+
 <i class="icon-calendar-empty"></i> <time datetime="2014-03-04T20:23:26-08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2014</time></h5>
           <div class="row-fluid">
           
@@ -144,7 +432,7 @@
    task :all =&gt; [:dog, :cat]
  end
 </code></pre></li>
-<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughbot</a> provides a really nice shared context that makes testing very easy.</p></li>
+<li><p>Rake tasks should be tested. <a href="http://robots.thoughtbot.com/test-rake-tasks-like-a-boss">Thoughtbot</a> provides a really nice shared context that makes testing very easy.</p></li>
 </ol>
 
 

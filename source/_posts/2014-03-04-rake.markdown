@@ -27,4 +27,4 @@ Here's what I learned:
           task :all => [:dog, :cat]
         end
 
-2. Rake tasks should be tested. [Thoughbot](http://robots.thoughtbot.com/test-rake-tasks-like-a-boss) provides a really nice shared context that makes testing very easy. 
+2. Rake tasks should be tested. [Thoughtbot](http://robots.thoughtbot.com/test-rake-tasks-like-a-boss) provides a really nice shared context that makes testing very easy. 

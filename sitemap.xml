@@ -21,12 +21,18 @@
         <lastmod>2014-03-09T18:58:12-07:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/
+        </loc>
+        <lastmod>2014-05-17T18:22:48-07:00</lastmod>
+    </url>
+    <url>
         <loc>http://steven-ferguson.github.io/blog/archives/</loc>
-        <lastmod>2014-03-09T18:58:12-07:00</lastmod>
+        <lastmod>2014-05-17T18:22:48-07:00</lastmod>
     </url>
     <url>
         <loc>http://steven-ferguson.github.io/</loc>
-        <lastmod>2014-03-09T18:58:12-07:00</lastmod>
+        <lastmod>2014-05-17T18:22:48-07:00</lastmod>
     </url>
     <url>
         <loc>http://steven-ferguson.github.io/robots.txt</loc>

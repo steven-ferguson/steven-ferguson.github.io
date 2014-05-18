@@ -104,6 +104,129 @@
   
 
 
+<i class="icon-calendar-empty"></i> <time datetime="2014-05-17T18:20:42-07:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time></h5>
+          <div class="row-fluid">
+          
+          <a href="http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/#disqus_thread">Comments </a> <span class="fui-bubble-16"></span>
+          
+          </div>
+          
+          <div class="row-fluid">
+          
+          <a href="/blog/categories/rspec/"><span class="badge">RSpec</span></a>
+          
+          <a href="/blog/categories/ruby-on-rails/"><span class="badge">Ruby on Rails</span></a>
+          
+          <a href="/blog/categories/tdd/"><span class="badge">TDD</span></a>
+          
+          </div>
+          
+    </div>
+    <div class="span10 post-container">
+      <h1 class="link"><a href="/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/">Using RSpec Shared Context for DRYer Specs</a></h1>
+      <p>Do you ever find that many of your specs have a similar setup that you are repeating over and over? I often find this happening when I&rsquo;m writing feature specs that require a logged in user. For example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feature</span> <span class="s1">&#39;some super cool feature&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">background</span> <span class="s1">&#39;login an admin&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">user</span><span class="o">.</span><span class="n">confirm!</span>
+</span><span class='line'>    <span class="n">login_as</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:user</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">scenario</span> <span class="s1">&#39;my super cool scenario&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If my login or authentication process changes, I have to manually go into each spec and change the code. I also find that this setup code clutters the spec and makes it harder to read. If we could extract the setup code and replace it with an easy to read single line, it would solve both of these problems.</p>
+
+<p><a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-context">RSpec shared contexts</a> provide just this type of solution. Using a shared context we can extract the setup into its own file, and rewrite our feature spec in a cleaner way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">feature</span> <span class="s1">&#39;some super cool feature&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">include_context</span> <span class="s1">&#39;a logged in admin&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">scenario</span> <span class="s1">&#39;my super cool scenario&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To create a shared context:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># ./spec/support/shared_contexts/a_logged_in_admin.rb    </span>
+</span><span class='line'>
+</span><span class='line'><span class="n">shared_context</span> <span class="s1">&#39;a logged in admin&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">before</span> <span class="s1">&#39;create and login admin&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">user</span> <span class="o">=</span> <span class="n">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">role</span><span class="p">:</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">user</span><span class="o">.</span><span class="n">confirm!</span>
+</span><span class='line'>    <span class="n">login_as</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:user</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since all files located in <code>spec/support</code> are automatically required in the default <code>spec_helper.rb</code>, we can call the context from any spec. Now when we need to change how a user is logged in, we just have to change the code in our shared context and without having to change our specs.</p>
+
+      
+      
+    </div>
+  </div>
+
+
+
+    </article>
+    
+    <hr>
+    
+  
+  
+    <article>
+      
+
+  <div class="row-fluid">
+    <div class="span2 post-meta">
+	  <h5 class="date-time">
+
+
+
+
+
+
+
+
+  
+
+
 <i class="icon-calendar-empty"></i> <time datetime="2014-03-09T13:10:30-07:00" pubdate data-updated="true">Mar 9<span>th</span>, 2014</time></h5>
           <div class="row-fluid">
           

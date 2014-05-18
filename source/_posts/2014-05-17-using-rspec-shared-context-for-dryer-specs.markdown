@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Using RSpec Shared Context for DRYer Specs"
-date: 2014-05-16 16:30:35 -0700
+date: 2014-05-17 18:20:42 -0700
 comments: true
 categories: [RSpec, Ruby on Rails, TDD]
 ---

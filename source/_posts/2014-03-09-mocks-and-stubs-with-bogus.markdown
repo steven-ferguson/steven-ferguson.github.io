@@ -146,4 +146,4 @@ describe User do
 end
 ```
 
-Mocks are a great way to focus on the messages that your objects are sending when testing. Give them a try and experience the benefits of a faster more resilient test sutie. 
+Mocks are a great way to focus on the messages that your objects are sending when testing. Give them a try and experience the benefits of a faster more resilient test suite. 

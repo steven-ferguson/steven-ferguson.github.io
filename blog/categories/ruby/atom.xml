@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Ruby on Rails | Things I Learned Today]]></title>
-  <link href="http://steven-ferguson.github.io/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Ruby | Things I Learned Today]]></title>
+  <link href="http://steven-ferguson.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
   <updated>2014-06-16T23:45:16-07:00</updated>
   <id>http://steven-ferguson.github.io/</id>
@@ -109,65 +109,6 @@ report.save_to(s3_store)
 ```</p>
 
 <p>Start thinking about objects in terms of the messages they receive, and you will be rewarded with the flexibility that duck typing allows.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using RSpec Shared Context for DRYer Specs]]></title>
-    <link href="http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/"/>
-    <updated>2014-05-17T18:20:42-07:00</updated>
-    <id>http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs</id>
-    <content type="html"><![CDATA[<p>Do you ever find that many of your specs have a similar setup that you are repeating over and over? I often find this happening when I&rsquo;m writing feature specs that require a logged in user. For example:</p>
-
-<p>```ruby  <br/>
-feature &lsquo;some super cool feature&rsquo; do
-  background &lsquo;login an admin&rsquo; do</p>
-
-<pre><code>user = create(:user, role: 'admin')
-user.confirm!
-login_as(user, scope: :user)
-</code></pre>
-
-<p>  end</p>
-
-<p>  scenario &lsquo;my super cool scenario&rsquo; do
-  &hellip;
-  end
-end
-```</p>
-
-<p>If my login or authentication process changes, I have to manually go into each spec and change the code. I also find that this setup code clutters the spec and makes it harder to read. If we could extract the setup code and replace it with an easy to read single line, it would solve both of these problems.</p>
-
-<p><a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-context">RSpec shared contexts</a> provide just this type of solution. Using a shared context we can extract the setup into its own file, and rewrite our feature spec in a cleaner way:</p>
-
-<p>```ruby
-feature &lsquo;some super cool feature&rsquo; do
-  include_context &lsquo;a logged in admin&rsquo;</p>
-
-<p>  scenario &lsquo;my super cool scenario&rsquo; do
-  &hellip;
-  end
-end
-```</p>
-
-<p>To create a shared context:
-```ruby</p>
-
-<h1>./spec/support/shared_contexts/a_logged_in_admin.rb</h1>
-
-<p>shared_context &lsquo;a logged in admin&rsquo; do
-  before &lsquo;create and login admin&rsquo; do</p>
-
-<pre><code>user = create(:user, role: 'admin')
-user.confirm!
-login_as(user, scope: :user)
-</code></pre>
-
-<p>  end
-end
-```</p>
-
-<p>Since all files located in <code>spec/support</code> are automatically required in the default <code>spec_helper.rb</code>, we can call the context from any spec. Now when we need to change how a user is logged in, we just have to change the code in our shared context and without having to change our specs.</p>
 ]]></content>
   </entry>
   

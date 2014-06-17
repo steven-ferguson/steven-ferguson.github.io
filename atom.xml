@@ -4,7 +4,7 @@
   <title><![CDATA[Things I Learned Today]]></title>
   <link href="http://steven-ferguson.github.io/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
-  <updated>2014-05-17T18:24:30-07:00</updated>
+  <updated>2014-06-16T23:45:16-07:00</updated>
   <id>http://steven-ferguson.github.io/</id>
   <author>
     <name><![CDATA[Steven]]></name>
@@ -12,6 +12,125 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Duck Typing]]></title>
+    <link href="http://steven-ferguson.github.io/blog/2014/06/16/duck-typing/"/>
+    <updated>2014-06-16T23:28:18-07:00</updated>
+    <id>http://steven-ferguson.github.io/blog/2014/06/16/duck-typing</id>
+    <content type="html"><![CDATA[<p>One of my big breakthroughs in understanding object oriented design in Ruby came when I learned about <a href="http://en.wikipedia.org/wiki/Duck_typing">duck typing</a>. Wikipedia provides a nice definiition of the concept:</p>
+
+<blockquote><p>duck typing is a style of typing in which an object&rsquo;s methods and properties determine the valid semantics, rather than its inheritance from a particular class or implementation of an explicit interface.</p></blockquote>
+
+<p>This means that in Ruby it does not matter if an object is a specific type or class, only that it can respond to a given message. For example, in the <code>stringify</code> method below, it does not matter if the argument is an integer or symbol or some other class, only that it can respond to the <code>to_s</code> method.</p>
+
+<pre><code>def stringify(a)
+  a.to_s
+end
+
+stringify(1)
+=&gt; "1"
+
+stringify(:hello)
+=&gt; "hello"
+
+class NewClass
+  def to_s
+    "works for custom objects too!"
+  end
+end
+
+stringify(NewClass.new)
+=&gt; "works for custom objects too!"
+</code></pre>
+
+<p>Not having to care about a specific object&rsquo;s class enables a lot of flexiblity for swaping out collaborator objects. To illustrate this, let&rsquo;s take a look at an example:</p>
+
+<h3>File Storage with Duck Typing</h3>
+
+<p>My app generates reports, and I would like to save these reports. Initially, I just want to save the reports to my local disk.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Report</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+</span><span class='line'>    <span class="vi">@data</span> <span class="o">=</span> <span class="n">data</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">save_to</span><span class="p">(</span><span class="n">storage</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">storage</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="vi">@name</span><span class="p">,</span> <span class="vi">@data</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FileStorage</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;reports/</span><span class="si">#{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">report</span> <span class="o">=</span> <span class="no">Report</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;Sales Figures&#39;</span><span class="p">,</span> <span class="s1">&#39;sales data blah...&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">file_store</span> <span class="o">=</span> <span class="no">FileStorage</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">report</span><span class="o">.</span><span class="n">save_to</span><span class="p">(</span><span class="n">file_store</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Later, I decide that it would also be nice to have the ability to upload reports to S3. With duck typing, implementing this new feature is as simple as creating a new class for uploading to S3 which implements a <code>store</code> method:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">S3Storage</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@bucket</span> <span class="o">=</span> <span class="ss">AWS</span><span class="p">:</span><span class="ss">:S3</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">buckets</span><span class="o">[</span><span class="n">bucket_name</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">store</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@bucket</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">report</span> <span class="o">=</span> <span class="no">Report</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;Sales Figures&#39;</span><span class="p">,</span> <span class="s1">&#39;sales data blah...&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">s3_store</span> <span class="o">=</span> <span class="no">S3Storage</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;my_bucket&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">report</span><span class="o">.</span><span class="n">save_to</span><span class="p">(</span><span class="n">s3_store</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Start thinking about objects in terms of the messages they receive, and you will be rewarded with the flexibility that duck typing allows.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using RSpec Shared Context for DRYer Specs]]></title>
@@ -332,7 +451,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Mocks are a great way to focus on the messages that your objects are sending when testing. Give them a try and experience the benefits of a faster more resilient test sutie.</p>
+<p>Mocks are a great way to focus on the messages that your objects are sending when testing. Give them a try and experience the benefits of a faster more resilient test suite.</p>
 ]]></content>
   </entry>
   

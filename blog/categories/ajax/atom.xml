@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: AJAX | Things I Learned about Rails Today]]></title>
+  <link href="http://steven-ferguson.github.io/blog/categories/ajax/atom.xml" rel="self"/>
+  <link href="http://steven-ferguson.github.io/"/>
+  <updated>2014-07-19T15:03:11-07:00</updated>
+  <id>http://steven-ferguson.github.io/</id>
+  <author>
+    <name><![CDATA[Steven]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Switches with Ruby on Rails]]></title>
+    <link href="http://steven-ferguson.github.io/blog/2014/07/19/t-switches-with-ruby-on-rails/"/>
+    <updated>2014-07-19T13:47:42-07:00</updated>
+    <id>http://steven-ferguson.github.io/blog/2014/07/19/t-switches-with-ruby-on-rails</id>
+    <content type="html"><![CDATA[<p>In just about every Rails application that I have built there has been a need to switch a model between one or more states. This post will demonstrate the solution I use to implement this common UX pattern.</p>
+
+<h3>The Setup</h3>
+
+<p>I have a Ruby on Rails application that I use to manange my robot minions, and I would like easily turn them on and off from my dashboard view.</p>
+
+<h5>Insert picture showing the dashboard with switches.</h5>
+
+<p>You can see <a href="">my minion dashboard in action here</a>.</p>
+
+<h3>Steps to implement:</h3>
+
+<ol>
+<li><p>Button group with active status button having added class</p></li>
+<li><p>Link_to&rsquo;s set to patch with updated status</p></li>
+<li><p>Nested Controller with update and destroy actions. This way I can isolate my response to when a user clicks a toggle button instead of polluting the main resource update actions</p></li>
+<li><p>AJAXify it</p></li>
+<li><p>Some additional ujs options that can be added to</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

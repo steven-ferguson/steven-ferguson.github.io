@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: TDD | Things I Learned Today]]></title>
+  <title><![CDATA[Category: TDD | Things I Learned about Rails Today]]></title>
   <link href="http://steven-ferguson.github.io/blog/categories/tdd/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
-  <updated>2014-06-16T23:45:16-07:00</updated>
+  <updated>2014-07-19T15:03:11-07:00</updated>
   <id>http://steven-ferguson.github.io/</id>
   <author>
     <name><![CDATA[Steven]]></name>

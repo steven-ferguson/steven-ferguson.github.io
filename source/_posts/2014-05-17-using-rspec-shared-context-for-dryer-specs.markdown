@@ -4,6 +4,9 @@ title: "Using RSpec Shared Context for DRYer Specs"
 date: 2014-05-17 18:20:42 -0700
 comments: true
 categories: [RSpec, Ruby on Rails, TDD]
+
+keywords: "rspec, shared, context, rails"
+description: "How to use RSpec shared_contexts to write better specs"
 ---
 
 Do you ever find that many of your specs have a similar setup that you are repeating over and over? I often find this happening when I'm writing feature specs that require a logged in user. For example:

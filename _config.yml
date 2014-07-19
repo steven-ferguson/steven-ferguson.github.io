@@ -3,11 +3,12 @@
 # ----------------------- #
 
 url: http://steven-ferguson.github.io
-title: Things I Learned Today
-subtitle: Learn a little everyday
+title: Things I Learned about Rails Today
+subtitle: A blog about development in Ruby on Rails
 author: Steven
 simple_search: http://google.com/search
-description: A blog discussing various topics about software engineering
+description: A blog discussing techniques to improve your Ruby on Rails code
+keywords: "ruby, rails, testing"
 
 navigation:
 - text: Blog

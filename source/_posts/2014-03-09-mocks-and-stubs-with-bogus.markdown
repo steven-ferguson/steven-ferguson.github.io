@@ -4,6 +4,9 @@ title: "Testing Outgoing Command Messages With RSpec"
 date: 2014-03-09 13:10:30 -0700
 comments: true
 categories: [RSpec, Bogus, TDD, Testing]
+
+keywords: "rspec, mocks, rails, testing"
+description: "How to properly unit test your outgoing command messages in ruby"
 ---
 
 As the size and complexity of the applications I have been working on has grown, the importance of writing good unit test has become increasingly apparent. The goal is to have a test suite that is fast and able to withstand changes.

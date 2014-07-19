@@ -4,6 +4,9 @@ title: "Duck Typing"
 date: 2014-06-16 23:28:18 -0700
 comments: true
 categories: [Ruby, OOP, Ruby on Rails]
+
+keywords: "rails, duck, typing, ruby"
+description: "An introduction to duck typing in ruby"
 ---
 
 One of my big breakthroughs in understanding object oriented design in Ruby came when I learned about [duck typing](http://en.wikipedia.org/wiki/Duck_typing). Wikipedia provides a nice definiition of the concept:

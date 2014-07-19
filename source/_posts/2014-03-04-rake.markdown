@@ -4,6 +4,9 @@ title: "Rake"
 date: 2014-03-04 20:23:26 -0800
 comments: true
 categories: [Rake, Rspec]
+
+keywords: "rake, ruby, testing, rspec"
+description: "An Introduction to Rake"
 ---
 
 [Rake](http://rake.rubyforge.org/) is something I have been using since day one with Rails, but that I really haven't gone any deeper with than the basic rails rake tasks. Today I had to write a rake tasks that ran some checks and updated records.

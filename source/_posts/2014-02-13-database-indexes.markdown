@@ -4,6 +4,9 @@ title: "Database Indexes"
 date: 2014-02-13 15:43:48 -0800
 comments: true
 categories: [SQL, PostgreSQL, Rails]
+
+keywords: "rails, index, database"
+description: "Database indexes for RoR"
 ---
 
 Prior to today, I knew database indexes were something you used to help speed up a query, but I didn't really understand their importance. I read this great [Thoughtbot blog](http://robots.thoughtbot.com/a-grand-piano-for-your-violin) to learn more about them.

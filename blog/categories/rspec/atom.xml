@@ -4,7 +4,7 @@
   <title><![CDATA[Category: RSpec | Things I Learned about Rails Today]]></title>
   <link href="http://steven-ferguson.github.io/blog/categories/rspec/atom.xml" rel="self"/>
   <link href="http://steven-ferguson.github.io/"/>
-  <updated>2014-07-19T15:08:37-07:00</updated>
+  <updated>2014-09-18T22:39:34-07:00</updated>
   <id>http://steven-ferguson.github.io/</id>
   <author>
     <name><![CDATA[Steven]]></name>
@@ -12,6 +12,77 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Test your API with RSpec]]></title>
+    <link href="http://steven-ferguson.github.io/blog/2014/09/18/test-your-api-with-rspec/"/>
+    <updated>2014-09-18T21:03:11-07:00</updated>
+    <id>http://steven-ferguson.github.io/blog/2014/09/18/test-your-api-with-rspec</id>
+    <content type="html"><![CDATA[<p>I have been writing a lot of tests for our API lately, and I wanted to share a technique that has helped me build a test suite that is easy to understand and write. Our API keeps a pretty consistent pattern which makes it a perfect candidate for <a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-examples">RSpec shared examples</a>. Similar to  <a href="http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/">RSpec shared context which I discussed in another post</a>, shared examples are a great way to clean up test code and create useful abstractions.</p>
+
+<p>To include a shared example in a spec you have to use one of the following methods:
+<code>ruby
+include_examples "name"      # include the examples in the current context
+it_behaves_like "name"       # include the examples in a nested context
+it_should_behave_like "name" # include the examples in a nested context
+matching metadata            # include the examples in the current context
+</code></p>
+
+<p>These methods allow you to pass parameters that can be used in the example group. I utilize this for my api tests to provide a factory name, the path for the request and the model:</p>
+
+<p>```ruby</p>
+
+<h1>/spec/requests/account_spec.rb</h1>
+
+<p>require &lsquo;rails_helper&rsquo;</p>
+
+<p>describe &lsquo;Account API&rsquo; do
+  describe &lsquo;/api/accounts&rsquo; do</p>
+
+<pre><code>it_behaves_like 'an index route', Account, :account, '/api/accounts'
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>In a Rails project, it is usually recommended to include shared examples under the support folder, so that they are autoloaded and available to use in all your tests.</p>
+
+<p>```ruby</p>
+
+<h1>/spec/support/example_groups/index_route</h1>
+
+<p>shared_examples &ldquo;an index route&rdquo; do |model, factory, path|
+  let(:resources) { model.to_s.tableize }</p>
+
+<p>  it &ldquo;responds with a collection of the resource&rdquo;, type: :request do</p>
+
+<pre><code>resource = FactoryGirl.create(factory)
+
+get path
+
+json = JSON.parse(response.body)
+expect(response.status).to eq 200
+expect(json[resources].length).to eq 1
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>Now when I want to test another API endpoint that follows the RESTful index pattern, I can reuse this spec. Another benefit is that if I were to change the behavior for the index action by requiring an oauth token, I would only need to make the change in one place. Shared examples are also composable, so you could create a shared example for a restful resource by combining shared examples for all the different route types:</p>
+
+<p><code>ruby
+shared_examples "a RESTful resource" do |model, factory, path|
+  it_behaves_like "an index route", model, factory, path
+  it_behaves_like "a create route", model, path
+  it_behaves_like "a show route", model, factory, path
+  it_behaves_like "an update route", model, factory, path
+  it_behaves_like "a destroy route", model, factory, path
+end
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using RSpec Shared Context for DRYer Specs]]></title>

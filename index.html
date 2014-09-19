@@ -122,6 +122,150 @@
   
 
 
+<i class="icon-calendar-empty"></i> <time datetime="2014-09-18T21:03:11-07:00" pubdate data-updated="true">Sep 18<span>th</span>, 2014</time></h5>
+          <div class="row-fluid">
+          
+          <a href="http://steven-ferguson.github.io/blog/2014/09/18/test-your-api-with-rspec/#disqus_thread">Comments </a> <span class="fui-bubble-16"></span>
+          
+          </div>
+          
+          <div class="row-fluid">
+          
+          <a href="/blog/categories/rspec/"><span class="badge">RSpec</span></a>
+          
+          <a href="/blog/categories/ruby-on-rails/"><span class="badge">Ruby on Rails</span></a>
+          
+          <a href="/blog/categories/testing/"><span class="badge">Testing</span></a>
+          
+          </div>
+          
+    </div>
+    <div class="span10 post-container">
+      <h1 class="link"><a href="/blog/2014/09/18/test-your-api-with-rspec/">Test your API with RSpec</a></h1>
+      <p>I have been writing a lot of tests for our API lately, and I wanted to share a technique that has helped me build a test suite that is easy to understand and write. Our API keeps a pretty consistent pattern which makes it a perfect candidate for <a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-examples">RSpec shared examples</a>. Similar to  <a href="http://steven-ferguson.github.io/blog/2014/05/17/using-rspec-shared-context-for-dryer-specs/">RSpec shared context which I discussed in another post</a>, shared examples are a great way to clean up test code and create useful abstractions.</p>
+
+<p>To include a shared example in a spec you have to use one of the following methods:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">include_examples</span> <span class="s2">&quot;name&quot;</span>      <span class="c1"># include the examples in the current context</span>
+</span><span class='line'><span class="n">it_behaves_like</span> <span class="s2">&quot;name&quot;</span>       <span class="c1"># include the examples in a nested context</span>
+</span><span class='line'><span class="n">it_should_behave_like</span> <span class="s2">&quot;name&quot;</span> <span class="c1"># include the examples in a nested context</span>
+</span><span class='line'><span class="n">matching</span> <span class="n">metadata</span>            <span class="c1"># include the examples in the current context</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>These methods allow you to pass parameters that can be used in the example group. I utilize this for my api tests to provide a factory name, the path for the request and the model:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># /spec/requests/account_spec.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rails_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Account API&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">describe</span> <span class="s1">&#39;/api/accounts&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">it_behaves_like</span> <span class="s1">&#39;an index route&#39;</span><span class="p">,</span> <span class="no">Account</span><span class="p">,</span> <span class="ss">:account</span><span class="p">,</span> <span class="s1">&#39;/api/accounts&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In a Rails project, it is usually recommended to include shared examples under the support folder, so that they are autoloaded and available to use in all your tests.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#/spec/support/example_groups/index_route</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">shared_examples</span> <span class="s2">&quot;an index route&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:resources</span><span class="p">)</span> <span class="p">{</span> <span class="n">model</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">tableize</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;responds with a collection of the resource&quot;</span><span class="p">,</span> <span class="ss">type</span><span class="p">:</span> <span class="ss">:request</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">resource</span> <span class="o">=</span> <span class="no">FactoryGirl</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">get</span> <span class="n">path</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span> <span class="mi">200</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">json</span><span class="o">[</span><span class="n">resources</span><span class="o">].</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span> <span class="mi">1</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now when I want to test another API endpoint that follows the RESTful index pattern, I can reuse this spec. Another benefit is that if I were to change the behavior for the index action by requiring an oauth token, I would only need to make the change in one place. Shared examples are also composable, so you could create a shared example for a restful resource by combining shared examples for all the different route types:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">shared_examples</span> <span class="s2">&quot;a RESTful resource&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">it_behaves_like</span> <span class="s2">&quot;an index route&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span>
+</span><span class='line'>  <span class="n">it_behaves_like</span> <span class="s2">&quot;a create route&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">path</span>
+</span><span class='line'>  <span class="n">it_behaves_like</span> <span class="s2">&quot;a show route&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span>
+</span><span class='line'>  <span class="n">it_behaves_like</span> <span class="s2">&quot;an update route&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span>
+</span><span class='line'>  <span class="n">it_behaves_like</span> <span class="s2">&quot;a destroy route&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">path</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+      
+      
+    </div>
+  </div>
+
+
+
+    </article>
+    
+    <hr>
+    
+  
+  
+    <article>
+      
+
+  <div class="row-fluid">
+    <div class="span2 post-meta">
+	  <h5 class="date-time">
+
+
+
+
+
+
+
+
+  
+
+
 <i class="icon-calendar-empty"></i> <time datetime="2014-06-16T23:28:18-07:00" pubdate data-updated="true">Jun 16<span>th</span>, 2014</time></h5>
           <div class="row-fluid">
           

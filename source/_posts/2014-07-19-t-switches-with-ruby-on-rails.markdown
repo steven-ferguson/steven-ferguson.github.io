@@ -11,18 +11,20 @@ description: "Implementing switches in Ruby on Rails with AJAX"
 
 In just about every Rails application that I have built there has been a need to switch a model between one or more states. This post will demonstrate the solution I use to implement this common UX pattern.
 
+You can see a live version of [my minion dashboard in action here](http://rails-minions.herokuapp.com/).
+
 ###The Setup
-I have a Ruby on Rails application that I use to manange my robot minions, and I would like easily turn them on and off from my dashboard view.
+I have a Ruby on Rails application that I use to manange my robot minions, and I would like easily turn them on and off from my dashboard view. 
 
 {% img https://s3-us-west-2.amazonaws.com/stevenfergusonblog/Screen+Shot+2014-07-26+at+6.56.37+PM.png %}
 
-You can see a live version of [my minion dashboard in action here](http://rails-minions.herokuapp.com/).
+When a user  clicks on a switch, I want the color of the buttons to reverse indicating that the minion's state has been changed. Additionally, I want this to be done without loading the page, so that I can quickly change multiple minions.
 
-I use a partial called ```_minion.html.erb``` to display each of the table rows. I should note if you can't already tell, I'm using bootstrap.
+###HTML Markup
+
+To display each minion, I use a partial called ```_minion.html.erb```. Since the name of my partial is the same as my model, it allows me to call ```render @minions``` on a collection of minions, and Rails will automatically render the ```_minion.html.erb``` partial.
 
 ```
-#_minion.html.erb
-
 <tr id='<%= dom_id(minion) %>' >
   <td><%= minion.name %></td>
   <td>
@@ -39,7 +41,8 @@ A couple things to note about the markup:
 
 2. Each ```link_to``` has ```remote: true``` set. This tells JQuery-UJS that I want the request to be made as an AJAX request. The ```method: :post``` specifies that I want this request to be made as a POST (the default for link_to is GET). 
 
-3. I use a decorator for my minion models to seprate view specific code from business logic. Here is my minion decorator. You can learn more about the decorator pattern [here](http://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators).
+###Decorator
+As you can see above, I set some classes for each button by calling ```minion.off_button_class``` and ```minion.on_button_class```. While these methods could live in the minion model, I prefer to create a decorator to handle this view specific code. A decorator, takes an object and adds behavior on top of the object. This allows the additional behavior to be added only when it is needed. You can learn more about the decorator pattern [here](http://robots.thoughtbot.com/tidy-views-and-beyond-with-decorators).
 
 ```
 class MinionDecorator < Draper::Decorator
@@ -70,6 +73,9 @@ class MinionDecorator < Draper::Decorator
   end
 end
 ```
+
+###Router and Controller
+
 So now that the view logic is taken care of let's look at how the router and controller implemen this action.
 
 ```
@@ -117,5 +123,6 @@ $("#<%= dom_id(@minion) %>").replaceWith("<%= j render @minion %>");
 ```
 
 Further Reading:
-* [DHH on SJR](https://signalvnoise.com/posts/3697-server-generated-javascript-responses)
-* [Implementing a favorite button with AJAX](http://www.topdan.com/ruby-on-rails/ajax-toggle-buttons.html)
+
++ [DHH on SJR](https://signalvnoise.com/posts/3697-server-generated-javascript-responses)
++ [Implementing a favorite button with AJAX](http://www.topdan.com/ruby-on-rails/ajax-toggle-buttons.html)
